@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
-
-import { useNavigate } from 'react-router-dom';
-// import firebaseApp from '../src/firebase'; // Only if you use firebase in this file
-
 import { useTranslation } from 'react-i18next';
-
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
 import { db } from '../src/firebase';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
-
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-
   const [identifier, setIdentifier] = useState(''); // email or phone
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignUpClick = () => {
@@ -117,10 +108,6 @@ const Login = () => {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
     <div className="min-h-screen w-full flex" style={{ background: '#FFF4E6' }}>
       {/* Left Section: Visual/Illustration */}
@@ -173,32 +160,6 @@ const Login = () => {
               disabled={loading}
             />
             {/* Password Field */}
-
-            <div className="relative flex items-center">
-              <span className="absolute left-4 flex items-center h-full">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="5" y="10" width="14" height="9" rx="2" fill="#FFD580" stroke="#BDBDBD" strokeWidth="1.5"/>
-                  <path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#BDBDBD" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx="12" cy="15" r="1.2" fill="#FF9800"/>
-                  <rect x="11.25" y="15.5" width="1.5" height="2" rx="0.75" fill="#FF9800"/>
-                </svg>
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
-                className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200 pr-12 pl-14"
-                style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-500"
-                onClick={togglePasswordVisibility}
-                aria-label="Toggle password visibility"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -225,7 +186,6 @@ const Login = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 )}
-
               </button>
             </div>
             {/* Forgot Password */}
@@ -267,7 +227,6 @@ const Login = () => {
             </div>
             {/* Google Login Button */}
           </form>
-          {/* comment */}
           {/* Register Prompt */}
           <div className="mt-8 text-center text-sm" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14 }}>
             {t('dontHaveAccount')}
