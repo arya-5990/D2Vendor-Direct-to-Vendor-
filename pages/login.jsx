@@ -40,7 +40,7 @@ const Login = () => {
     // Simulate login process
     setTimeout(() => {
       setIsSubmitting(false);
-      navigate('/order-history');
+      navigate('/vendor-dashboard');
     }, 2000);
   };
 

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route , Navigate } from 'react-router-
 import Hero from '../pages/hero';
 import Login from '../pages/login';
 import Registration from '../pages/registration';
-import VendorDashboard from '../pages/vendorDashboard';
+import ForgotPass from '../pages/forgotPass';
 import SearchFilter from '../pages/searchFilter';
 import Suppliers from '../pages/suppliers';
 import PriceTracker from '../pages/priceTracker';
@@ -15,6 +15,7 @@ import MyProductsPage from '../pages/MyProducts';
 import OrderHistoryPage from '../pages/OrderHistory';
 import Sidebar from '../pages/Sidebar';
 import Topbar from '../pages/Topbar';
+import SupplierItemsPage from '../pages/SupplierItemsPage';
 import { FaTrash } from 'react-icons/fa';
 import './App.css';
 
@@ -298,6 +299,68 @@ function SupplierDashboardLayout({ children }) {
   );
 }
 
+// Vendor Layout for Search & Filter and other vendor pages
+function VendorLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-lg flex flex-col py-8 px-4">
+        <div className="text-2xl font-bold text-orange-500 mb-10">
+          VendorHub
+        </div>
+        <nav className="flex-1 space-y-2">
+          <a href="/vendor-dashboard" className="block px-4 py-3 rounded-lg text-lg font-medium bg-orange-100 text-orange-600">
+            Search & Filter
+          </a>
+          <a href="/vendor-dashboard/suppliers" className="block px-4 py-3 rounded-lg text-lg font-medium text-gray-700 hover:bg-orange-50">
+            Suppliers
+          </a>
+          <a href="/vendor-dashboard/price-tracker" className="block px-4 py-3 rounded-lg text-lg font-medium text-gray-700 hover:bg-orange-50">
+            Price Tracker
+          </a>
+          <a href="/vendor-dashboard/quick-reorder" className="block px-4 py-3 rounded-lg text-lg font-medium text-gray-700 hover:bg-orange-50">
+            Quick Reorder
+          </a>
+          <a href="/vendor-dashboard/reviews" className="block px-4 py-3 rounded-lg text-lg font-medium text-gray-700 hover:bg-orange-50">
+            Reviews & Ratings
+          </a>
+          <a href="#" className="block px-4 py-3 rounded-lg text-lg font-medium text-gray-400 opacity-50 cursor-not-allowed">
+            Group Buy
+          </a>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="flex items-center justify-between px-10 py-6 bg-white shadow-sm">
+          <div className="flex items-center gap-4">
+            <span className="text-2xl font-bold text-orange-500">
+              VendorHub
+            </span>
+          </div>
+          <div className="flex items-center gap-6">
+            {/* Language Switch */}
+            <button className="px-3 py-2 rounded-lg bg-orange-50 text-orange-600 font-semibold hover:bg-orange-100 transition">
+              English
+            </button>
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button className="px-4 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold hover:bg-orange-200 transition">
+                Supplier Name
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <div className="flex-1 p-10">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -313,18 +376,19 @@ function App() {
           <Route path="/my-products" element={<SupplierDashboardLayout><MyProductsWrapper /></SupplierDashboardLayout>} />
           <Route path="/add-product" element={<SupplierDashboardLayout><AddProductWrapper /></SupplierDashboardLayout>} />
           
-          {/* Vendor dashboard routes */}
-          <Route path="/vendor-dashboard" element={<VendorDashboard />}>
-            <Route path="search" element={<SearchFilter />} />
-            <Route path="suppliers" element={<Suppliers />} />
-            <Route path="price-tracker" element={<PriceTracker />} />
-            <Route path="quick-reorder" element={<QuickReorder />} />
-            <Route path="reviews" element={<Reviews />} />
-          </Route>
+          {/* Vendor routes - Search & Filter is now the default */}
+          <Route path="/vendor-dashboard" element={<VendorLayout><SearchFilter /></VendorLayout>} />
+          <Route path="/vendor-dashboard/search" element={<VendorLayout><SearchFilter /></VendorLayout>} />
+          <Route path="/vendor-dashboard/suppliers" element={<VendorLayout><Suppliers /></VendorLayout>} />
+          <Route path="/vendor-dashboard/supplier-items" element={<VendorLayout><SupplierItemsPage /></VendorLayout>} />
+          <Route path="/vendor-dashboard/price-tracker" element={<VendorLayout><PriceTracker /></VendorLayout>} />
+          <Route path="/vendor-dashboard/quick-reorder" element={<VendorLayout><QuickReorder /></VendorLayout>} />
+          <Route path="/vendor-dashboard/reviews" element={<VendorLayout><Reviews /></VendorLayout>} />
           
           {/* Other routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
+          <Route path="/forgot-Pass" element={<ForgotPass />} />
           
           {/* Catch all route - redirect to hero page */}
           <Route path="*" element={<Navigate to="/" replace />} />

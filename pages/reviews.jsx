@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const existingReviews = [
   {
@@ -34,6 +35,7 @@ const existingReviews = [
 ];
 
 const Reviews = () => {
+  const { t } = useTranslation();
   const [newReview, setNewReview] = useState({
     supplier: '',
     rating: 0,
@@ -60,11 +62,11 @@ const Reviews = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6">⭐ Reviews & Ratings</h2>
+      <h2 className="text-2xl font-bold mb-6">⭐ {t('reviewsAndRatings')}</h2>
       
       {/* Existing Reviews */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Recent Reviews</h3>
+        <h3 className="text-lg font-semibold">{t('recentReviews')}</h3>
         {existingReviews.map((review, index) => (
           <div key={index} className="bg-white rounded-xl shadow p-6">
             <div className="flex items-start justify-between mb-3">
@@ -89,15 +91,15 @@ const Reviews = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
               <div className="flex items-center gap-2">
                 🚚
-                <span className="text-sm">Delivery: {review.deliverySpeed}/5</span>
+                <span className="text-sm">{t('delivery')}: {review.deliverySpeed}/5</span>
               </div>
               <div className="flex items-center gap-2">
                 🌿
-                <span className="text-sm">Quality: {review.quality}/5</span>
+                <span className="text-sm">{t('quality')}: {review.quality}/5</span>
               </div>
               <div className="flex items-center gap-2">
                 💰
-                <span className="text-sm">Price: {review.priceHonesty}/5</span>
+                <span className="text-sm">{t('price')}: {review.priceHonesty}/5</span>
               </div>
             </div>
             
@@ -108,47 +110,47 @@ const Reviews = () => {
       
       {/* Leave Review Form */}
       <div className="bg-white rounded-xl shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Leave a Review</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('leaveReview')}</h3>
         <form className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Supplier Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('supplierName')}</label>
             <input
               type="text"
               value={newReview.supplier}
               onChange={(e) => setNewReview({...newReview, supplier: e.target.value})}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-              placeholder="Enter supplier name"
+              placeholder={t('enterSupplierName')}
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Overall Rating</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('overallRating')}</label>
             {renderStars(newReview.rating, (star) => setNewReview({...newReview, rating: star}))}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Speed</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('deliverySpeed')}</label>
               {renderStars(newReview.deliverySpeed, (star) => setNewReview({...newReview, deliverySpeed: star}))}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quality</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('quality')}</label>
               {renderStars(newReview.quality, (star) => setNewReview({...newReview, quality: star}))}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price Honesty</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('priceHonesty')}</label>
               {renderStars(newReview.priceHonesty, (star) => setNewReview({...newReview, priceHonesty: star}))}
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('yourReview')}</label>
             <textarea
               value={newReview.comment}
               onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
               rows={3}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-              placeholder="Share your experience..."
+              placeholder={t('shareExperience')}
             />
           </div>
           
@@ -157,13 +159,13 @@ const Reviews = () => {
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition"
             >
-              Submit Review
+              {t('submitReview')}
             </button>
             <button
               type="button"
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2"
             >
-              🚩 Report Supplier
+              🚩 {t('reportSupplier')}
             </button>
           </div>
         </form>
