@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import axios from 'axios'; // Added for Cloudinary upload
+import { db } from '../src/firebase'; // Import Firestore db
+import { collection, addDoc } from 'firebase/firestore'; // Firestore functions
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
+
+// Cloudinary config
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dtintjmp4/image/upload';
+const CLOUDINARY_UPLOAD_PRESET = 'hackathon_unsigned'; // <-- Set this to your actual unsigned upload preset from Cloudinary
 
 const Registration = () => {
   const query = useQuery();
@@ -36,10 +43,56 @@ const Registration = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send to backend)
-    alert('Registration submitted!');
+
+    let imageFile = null;
+    let imageField = '';
+    if (type === 'supplier') {
+      imageFile = form.shopImage;
+      imageField = 'shopImageUrl';
+    } else if (type === 'vendor') {
+      imageFile = form.vendorSelfie;
+      imageField = 'vendorSelfieUrl';
+    }
+
+    let imageUrl = '';
+    if (imageFile) {
+      const data = new FormData();
+      data.append('file', imageFile);
+      data.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      try {
+        const res = await axios.post(CLOUDINARY_URL, data);
+        imageUrl = res.data.secure_url;
+      } catch (err) {
+        let msg = 'Image upload failed.';
+        if (err.response && err.response.data && err.response.data.error && err.response.data.error.message) {
+          msg += '\nCloudinary: ' + err.response.data.error.message;
+        }
+        alert(msg);
+        return;
+      }
+    }
+
+    // Prepare registration data for Firebase
+    const registrationData = {
+      ...form,
+      [imageField]: imageUrl,
+      type,
+      createdAt: new Date(),
+    };
+
+    // Remove file objects before saving to Firestore
+    delete registrationData.shopImage;
+    delete registrationData.vendorSelfie;
+
+    try {
+      const collectionName = type === 'vendor' ? 'User_vendors' : 'User_suppliers';
+      await addDoc(collection(db, collectionName), registrationData);
+      alert('Registration submitted and stored successfully!');
+    } catch (error) {
+      alert('Failed to store registration data: ' + error.message);
+    }
   };
 
   return (
