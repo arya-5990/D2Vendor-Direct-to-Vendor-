@@ -14,24 +14,80 @@ const SearchFilter = () => {
     priceSort: 'none'
   });
   const [suppliers, setSuppliers] = useState([]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const fetchSuppliers = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'User_suppliers'));
-        const supplierList = querySnapshot.docs.map(doc => doc.data());
+        // Fetch suppliers
+        const supplierSnapshot = await getDocs(collection(db, 'User_suppliers'));
+        const supplierList = supplierSnapshot.docs.map(doc => doc.data());
+        console.log('🔍 Fetched suppliers:', supplierList.length, supplierList);
         setSuppliers(supplierList);
+
+        // Fetch products
+        console.log('🔍 Attempting to fetch products from Firebase...');
+        try {
+          const productSnapshot = await getDocs(collection(db, 'products'));
+          console.log('🔍 Product snapshot:', productSnapshot);
+          console.log('🔍 Product snapshot empty:', productSnapshot.empty);
+          console.log('🔍 Product snapshot size:', productSnapshot.size);
+          
+          const productList = productSnapshot.docs.map(doc => {
+            const data = doc.data();
+            console.log('🔍 Product doc data:', doc.id, data);
+            return {
+              id: doc.id,
+              ...data
+            };
+          });
+          console.log('🔍 Fetched products:', productList.length, productList);
+          setProducts(productList);
+        } catch (productError) {
+          console.error('❌ Error fetching products:', productError);
+          // Try to fetch with mock data as fallback
+          console.log('🔍 Trying to use mock data as fallback...');
+          const mockProducts = [
+            {
+              id: 'mock1',
+              name: 'Fresh Tomatoes',
+              category: 'Vegetables',
+              price: 25,
+              supplierName: 'Fresh Farm',
+              description: 'Fresh red tomatoes from local farms',
+              brand: 'Local',
+              image: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=150&h=150&fit=crop',
+              rating: 4.5
+            },
+            {
+              id: 'mock2',
+              name: 'Organic Bananas',
+              category: 'Fruits',
+              price: 30,
+              supplierName: 'Organic Valley',
+              description: 'Sweet organic bananas',
+              brand: 'Organic',
+              image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=150&h=150&fit=crop',
+              rating: 4.8
+            }
+          ];
+          console.log('🔍 Using mock products:', mockProducts);
+          setProducts(mockProducts);
+        }
       } catch (error) {
-        console.error('Error fetching suppliers:', error);
+        console.error('Error fetching data:', error);
       }
     };
-    fetchSuppliers();
+    fetchData();
   }, []);
 
-  // Extract actual search term from query (remove emoji and "Supplier:" prefix)
+  // Extract actual search term from query (remove emoji and prefixes)
   const getActualSearchTerm = (query) => {
     if (query.includes('Supplier:')) {
       return query.split('Supplier:')[1]?.trim() || query;
+    }
+    if (query.includes('Product:')) {
+      return query.split('Product:')[1]?.trim() || query;
     }
     return query;
   };
@@ -39,7 +95,7 @@ const SearchFilter = () => {
   // Filter suppliers based on search query
   const filteredSuppliers = suppliers.filter(supplier => {
     const actualQuery = getActualSearchTerm(searchQuery).toLowerCase();
-    if (!actualQuery || actualQuery.trim() === '') return false; // Don't show any suppliers if no search query
+    if (!actualQuery || actualQuery.trim() === '') return false;
     
     return (
       supplier.supplierName?.toLowerCase().includes(actualQuery) ||
@@ -48,14 +104,48 @@ const SearchFilter = () => {
     );
   });
 
-  // Suggestions: only filtered suppliers
-  const suggestions = filteredSuppliers.map(supplier => ({
-    text: `🧑‍🌾 Supplier: ${supplier.supplierName}`,
-    supplier: supplier.supplierName,
-    contact: supplier.supplierContact,
-    email: supplier.supplierEmail,
-    type: 'supplier',
-  }));
+  // Filter products based on search query
+  const filteredProducts = products.filter(product => {
+    const actualQuery = getActualSearchTerm(searchQuery).toLowerCase();
+    if (!actualQuery || actualQuery.trim() === '') return false;
+    
+    const matches = (
+      product.name?.toLowerCase().includes(actualQuery) ||
+      product.category?.toLowerCase().includes(actualQuery) ||
+      product.brand?.toLowerCase().includes(actualQuery) ||
+      product.description?.toLowerCase().includes(actualQuery) ||
+      product.supplierName?.toLowerCase().includes(actualQuery)
+    );
+    
+    if (matches) {
+      console.log('🔍 Product match found:', product.name, 'for query:', actualQuery);
+    }
+    
+    return matches;
+  });
+
+  // Suggestions: both filtered suppliers and products
+  const suggestions = [
+    ...filteredSuppliers.map(supplier => ({
+      text: `🧑‍🌾 Supplier: ${supplier.supplierName}`,
+      supplier: supplier.supplierName,
+      contact: supplier.supplierContact,
+      email: supplier.supplierEmail,
+      type: 'supplier',
+    })),
+    ...filteredProducts.map(product => ({
+      text: `📦 Product: ${product.name}`,
+      product: product.name,
+      category: product.category,
+      price: product.price,
+      supplierName: product.supplierName,
+      type: 'product',
+    }))
+  ];
+
+  console.log('🔍 Filtered suppliers:', filteredSuppliers.length);
+  console.log('🔍 Filtered products:', filteredProducts.length);
+  console.log('🔍 Total suggestions:', suggestions.length);
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion.text);
@@ -64,6 +154,7 @@ const SearchFilter = () => {
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
+    console.log('🔍 Search query changed:', value);
     setSearchQuery(value);
     setShowSuggestions(value.length > 0);
   };
@@ -78,7 +169,7 @@ const SearchFilter = () => {
           <div className="flex-1 relative">
             <input
               type="text"
-              placeholder={t('searchPlaceholder')}
+              placeholder="Search suppliers or products..."
               value={searchQuery}
               onChange={handleSearchChange}
               className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-orange-500 focus:outline-none text-lg"
@@ -108,6 +199,15 @@ const SearchFilter = () => {
                     )}
                     {suggestion.type === 'supplier' && suggestion.email && (
                       <div className="text-sm text-gray-500">{t('email')}: {suggestion.email}</div>
+                    )}
+                    {suggestion.type === 'product' && suggestion.category && (
+                      <div className="text-sm text-gray-500">{t('category')}: {suggestion.category}</div>
+                    )}
+                    {suggestion.type === 'product' && suggestion.price && (
+                      <div className="text-sm text-gray-500">{t('price')}: ₹{suggestion.price}</div>
+                    )}
+                    {suggestion.type === 'product' && suggestion.supplierName && (
+                      <div className="text-sm text-gray-500">{t('supplier')}: {suggestion.supplierName}</div>
                     )}
                   </div>
                 </div>
@@ -171,35 +271,85 @@ const SearchFilter = () => {
         <h3 className="text-lg font-semibold mb-4">
           {searchQuery ? `"${getActualSearchTerm(searchQuery)}"` : t('search')} {t('results')}
         </h3>
-        {filteredSuppliers.length === 0 ? (
+        {filteredSuppliers.length === 0 && filteredProducts.length === 0 ? (
           <div className="text-gray-500 text-center py-8">
-            {searchQuery ? `No results found for "${getActualSearchTerm(searchQuery)}"` : 'Start typing to search suppliers'}
+            {searchQuery ? `No results found for "${getActualSearchTerm(searchQuery)}"` : 'Start typing to search suppliers or products'}
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredSuppliers.map((supplier, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-orange-50 transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold text-lg">{supplier.supplierName}</h4>
-                    <p className="text-gray-600">{supplier.supplierContact}</p>
-                    {supplier.shopAddress && (
-                      <p className="text-sm text-gray-500">📍 {supplier.shopAddress}</p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    {supplier.rating && (
-                      <div className="flex items-center gap-1 text-yellow-500">
-                        ⭐ <span className="font-semibold">{supplier.rating}</span>
+          <div className="space-y-6">
+            {/* Suppliers Section */}
+            {filteredSuppliers.length > 0 && (
+              <div>
+                <h4 className="text-lg font-semibold mb-3 text-gray-700">🧑‍🌾 {t('suppliers')} ({filteredSuppliers.length})</h4>
+                <div className="space-y-3">
+                  {filteredSuppliers.map((supplier, index) => (
+                    <div key={`supplier-${index}`} className="border border-gray-200 rounded-lg p-4 hover:bg-orange-50 transition">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-lg">{supplier.supplierName}</h4>
+                          <p className="text-gray-600">{supplier.supplierContact}</p>
+                          {supplier.shopAddress && (
+                            <p className="text-sm text-gray-500">📍 {supplier.shopAddress}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          {supplier.rating && (
+                            <div className="flex items-center gap-1 text-yellow-500">
+                              ⭐ <span className="font-semibold">{supplier.rating}</span>
+                            </div>
+                          )}
+                          <button className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            {t('view')}
+                          </button>
+                        </div>
                       </div>
-                    )}
-                    <button className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                      {t('view')}
-                    </button>
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+
+            {/* Products Section */}
+            {filteredProducts.length > 0 && (
+              <div>
+                <h4 className="text-lg font-semibold mb-3 text-gray-700">📦 {t('products')} ({filteredProducts.length})</h4>
+                <div className="space-y-3">
+                  {filteredProducts.map((product, index) => (
+                    <div key={`product-${index}`} className="border border-gray-200 rounded-lg p-4 hover:bg-orange-50 transition">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          {product.image && (
+                            <img 
+                              src={product.image} 
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          )}
+                          <div>
+                            <h4 className="font-semibold text-lg">{product.name}</h4>
+                            <p className="text-gray-600">{product.category}</p>
+                            <p className="text-sm text-gray-500">💰 ₹{product.price}</p>
+                            {product.supplierName && (
+                              <p className="text-sm text-gray-500">🏭 {product.supplierName}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {product.rating && (
+                            <div className="flex items-center gap-1 text-yellow-500">
+                              ⭐ <span className="font-semibold">{product.rating}</span>
+                            </div>
+                          )}
+                          <button className="mt-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            {t('view')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

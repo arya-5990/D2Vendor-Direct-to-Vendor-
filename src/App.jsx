@@ -50,6 +50,11 @@ function App() {
             <AddProductPage />
           </ProtectedRoute>
         } />
+        <Route path="/supplier/:supplierId/products" element={
+          <ProtectedRoute allowedUserTypes={['supplier']}>
+            <SupplierProductsPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );
