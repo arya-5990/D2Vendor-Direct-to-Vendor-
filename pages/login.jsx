@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
 import { db } from '../src/firebase';
@@ -227,6 +228,7 @@ const Login = () => {
             </div>
             {/* Google Login Button */}
           </form>
+          {/* comment */}
           {/* Register Prompt */}
           <div className="mt-8 text-center text-sm" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14 }}>
             {t('dontHaveAccount')}

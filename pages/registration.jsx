@@ -17,8 +17,6 @@ const Registration = () => {
   const { t } = useTranslation();
   const query = useQuery();
   const type = query.get('type'); // 'supplier' or 'vendor'
-  const [showSupplierPassword, setShowSupplierPassword] = useState(false);
-  const [showVendorPassword, setShowVendorPassword] = useState(false);
 
   // State for all fields
   const [form, setForm] = useState({
@@ -102,14 +100,6 @@ const Registration = () => {
     }
   };
 
-  const toggleSupplierPasswordVisibility = () => {
-    setShowSupplierPassword(!showSupplierPassword);
-  };
-
-  const toggleVendorPasswordVisibility = () => {
-    setShowVendorPassword(!showVendorPassword);
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 py-10 px-2">
       {/* Back to Home */}
@@ -156,21 +146,12 @@ const Registration = () => {
                 <input type="text" name="supplierAadhaar" value={form.supplierAadhaar} onChange={handleChange} required placeholder={t('supplierAadhaarPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
-                <input type={showSupplierPassword ? "text" : "password"} name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300 pr-12" />
                 <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
-
-                <span className="absolute right-4 text-orange-400 cursor-pointer" onClick={toggleSupplierPasswordVisibility} aria-label="Toggle password visibility">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                </span>
-
                 <input type="password" name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder={t('supplierPasswordPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🚚</span>
                 <input type="text" name="deliveryRange" value={form.deliveryRange} onChange={handleChange} required placeholder={t('deliveryRangePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
-
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📷</span>
@@ -203,17 +184,8 @@ const Registration = () => {
                 <input type="text" name="vendorAadhaar" value={form.vendorAadhaar} onChange={handleChange} required placeholder={t('vendorAadhaarPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
-                <input type={showVendorPassword ? "text" : "password"} name="vendorPassword" value={form.vendorPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300 pr-12" />
                 <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
-
-                <span className="absolute right-4 text-orange-400 cursor-pointer" onClick={toggleVendorPasswordVisibility} aria-label="Toggle password visibility">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                </span>
-
                 <input type="password" name="vendorPassword" value={form.vendorPassword} onChange={handleChange} required placeholder={t('vendorPasswordPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
-
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📸</span>
