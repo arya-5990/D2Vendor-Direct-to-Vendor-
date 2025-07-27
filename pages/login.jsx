@@ -1,7 +1,15 @@
 import React from 'react';
+
+import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const handleSignUpClick = () => {
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen w-full flex" style={{ background: '#FFF4E6' }}>
       {/* Left Section: Visual/Illustration */}
@@ -91,10 +99,16 @@ const Login = () => {
             </div>
             {/* Google Login Button */}
           </form>
+          {/* comment */}
           {/* Register Prompt */}
           <div className="mt-8 text-center text-sm" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14 }}>
-            Don’t have an account?{' '}
-            <a href="#" className="font-semibold hover:underline" style={{ color: '#F57C00' }}>
+            Don't have an account?{' '}
+            <a 
+              href="#" 
+              className="font-semibold hover:underline" 
+              style={{ color: '#F57C00' }}
+              onClick={handleSignUpClick}
+            >
               Sign up
             </a>
           </div>
