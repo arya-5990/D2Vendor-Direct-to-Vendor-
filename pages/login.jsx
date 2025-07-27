@@ -1,11 +1,6 @@
-// <<<<<<< HEAD
 import React, { useState } from 'react';
-// =======
-import React from 'react';
-
-// >>>>>>> 2b6bd297baf20d0f44a22aefbc136117e9084179
 import { useNavigate } from 'react-router-dom';
-import firebaseApp from '../src/firebase';
+// import firebaseApp from '../src/firebase'; // Only if you use firebase in this file
 
 const Login = () => {
   const navigate = useNavigate();
