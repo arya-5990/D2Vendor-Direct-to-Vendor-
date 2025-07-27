@@ -18,6 +18,7 @@ const Registration = () => {
     supplierContact: '',
     supplierEmail: '',
     supplierAadhaar: '',
+    supplierPassword: '',
     shopImage: null,
     // Vendor fields
     vendorName: '',
@@ -25,6 +26,7 @@ const Registration = () => {
     vendorResidential: '',
     vendorShop: '',
     vendorAadhaar: '',
+    vendorPassword: '',
     vendorSelfie: null,
   });
 
@@ -88,6 +90,10 @@ const Registration = () => {
                 <input type="text" name="supplierAadhaar" value={form.supplierAadhaar} onChange={handleChange} required placeholder="Aadhaar Card Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
+                <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
+                <input type="password" name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+              </div>
+              <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📷</span>
                 <input type="file" name="shopImage" accept="image/*" onChange={handleChange} required className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
                 <span className="ml-2 text-base text-gray-400">Shop Image</span>
@@ -116,6 +122,10 @@ const Registration = () => {
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🆔</span>
                 <input type="text" name="vendorAadhaar" value={form.vendorAadhaar} onChange={handleChange} required placeholder="Aadhaar Card Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+              </div>
+              <div className="relative flex items-center">
+                <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
+                <input type="password" name="vendorPassword" value={form.vendorPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📸</span>
