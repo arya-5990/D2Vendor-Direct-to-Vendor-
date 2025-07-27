@@ -16,6 +16,7 @@ import OrderHistoryPage from '../pages/OrderHistory';
 import Sidebar from '../pages/Sidebar';
 import Topbar from '../pages/Topbar';
 import SupplierItemsPage from '../pages/SupplierItemsPage';
+import Exchange from '../pages/exchange';
 import { FaTrash } from 'react-icons/fa';
 import './App.css';
 
@@ -381,6 +382,7 @@ function App() {
           <Route path="/vendor-dashboard/search" element={<VendorLayout><SearchFilter /></VendorLayout>} />
           <Route path="/vendor-dashboard/suppliers" element={<VendorLayout><Suppliers /></VendorLayout>} />
           <Route path="/vendor-dashboard/supplier-items" element={<VendorLayout><SupplierItemsPage /></VendorLayout>} />
+          <Route path="/vendor-dashboard/exchange" element={<VendorLayout><Exchange /></VendorLayout>} />
           <Route path="/vendor-dashboard/price-tracker" element={<VendorLayout><PriceTracker /></VendorLayout>} />
           <Route path="/vendor-dashboard/quick-reorder" element={<VendorLayout><QuickReorder /></VendorLayout>} />
           <Route path="/vendor-dashboard/reviews" element={<VendorLayout><Reviews /></VendorLayout>} />
