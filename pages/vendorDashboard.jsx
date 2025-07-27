@@ -8,6 +8,8 @@ const navItems = [
   { name: 'Price Tracker', path: '/vendor-dashboard/price-tracker' },
   { name: 'Quick Reorder', path: '/vendor-dashboard/quick-reorder' },
   { name: 'Reviews & Ratings', path: '/vendor-dashboard/reviews' },
+  { name: 'Give Leftovers', path: '/vendor-dashboard/give-leftovers' },
+  { name: 'Waste to Wealth', path: '/vendor-dashboard/kitchen-waste' },
   { name: 'Group Buy', path: '#', disabled: true },
 ];
 

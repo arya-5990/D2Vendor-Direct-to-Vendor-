@@ -10,6 +10,8 @@ import SupplierProductsPage from '../pages/SupplierProductsPage';
 import PriceTracker from '../pages/priceTracker';
 import QuickReorder from '../pages/quickReorder';
 import Reviews from '../pages/reviews';
+import GiveLeftovers from '../pages/giveLeftovers';
+import KitchenWasteDonation from '../pages/kitchenWasteDonation';
 import AddProductPage from '../pages/AddProductPage';
 import MyProductsPage from '../pages/MyProductsPage';
 import OrderHistoryPage from '../pages/OrderHistoryPage';
@@ -34,6 +36,8 @@ function App() {
           <Route path="price-tracker" element={<PriceTracker />} />
           <Route path="quick-reorder" element={<QuickReorder />} />
           <Route path="reviews" element={<Reviews />} />
+          <Route path="give-leftovers" element={<GiveLeftovers />} />
+          <Route path="kitchen-waste" element={<KitchenWasteDonation />} />
         </Route>
         <Route path="/order-history" element={
           <ProtectedRoute allowedUserTypes={['supplier']}>
