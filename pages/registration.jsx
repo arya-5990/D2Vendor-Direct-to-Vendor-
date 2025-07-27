@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios'; // Added for Cloudinary upload
 import { db } from '../src/firebase'; // Import Firestore db
-import { collection, addDoc } from 'firebase/firestore'; // Firestore functions
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'; // Firestore functions
 import { useTranslation } from 'react-i18next';
 
 function useQuery() {
@@ -12,6 +12,26 @@ function useQuery() {
 // Cloudinary config
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dtintjmp4/image/upload';
 const CLOUDINARY_UPLOAD_PRESET = 'hackathon_unsigned'; // <-- Set this to your actual unsigned upload preset from Cloudinary
+
+// Function to generate unique ID
+const generateUniqueId = async (type) => {
+  const prefix = type === 'supplier' ? 'SUP' : 'VEN';
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+  const baseId = `${prefix}${timestamp}${random}`;
+  
+  // Check if ID already exists
+  const collectionName = type === 'supplier' ? 'User_suppliers' : 'User_vendors';
+  const q = query(collection(db, collectionName), where('id', '==', baseId));
+  const querySnapshot = await getDocs(q);
+  
+  if (querySnapshot.empty) {
+    return baseId;
+  } else {
+    // If ID exists, generate a new one recursively
+    return generateUniqueId(type);
+  }
+};
 
 const Registration = () => {
   const { t } = useTranslation();
@@ -51,6 +71,9 @@ const Registration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Generate unique ID
+    const uniqueId = await generateUniqueId(type);
+
     let imageFile = null;
     let imageField = '';
     if (type === 'supplier') {
@@ -82,6 +105,7 @@ const Registration = () => {
     // Prepare registration data for Firebase
     const registrationData = {
       ...form,
+      id: uniqueId, // Add the auto-generated ID
       [imageField]: imageUrl,
       type,
       createdAt: new Date(),
@@ -94,7 +118,7 @@ const Registration = () => {
     try {
       const collectionName = type === 'vendor' ? 'User_vendors' : 'User_suppliers';
       await addDoc(collection(db, collectionName), registrationData);
-      alert(t('registrationSuccess'));
+      alert(`${t('registrationSuccess')}\nYour ${type === 'supplier' ? 'Supplier' : 'Vendor'} ID: ${uniqueId}`);
     } catch (error) {
       alert(t('registrationFailed') + error.message);
     }

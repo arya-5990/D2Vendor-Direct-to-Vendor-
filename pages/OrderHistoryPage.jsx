@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import OrderHistory from '../components/OrderHistory';
 import { mockOrders } from '../src/data/mockData';
-import { getUserDetails } from '../src/utils/auth';
+import { getUserDetails, getAuthToken } from '../src/utils/auth';
 
 function OrderHistoryPage() {
   const [timeFilter, setTimeFilter] = useState('lastDay');
@@ -16,8 +16,15 @@ function OrderHistoryPage() {
     console.log('OrderHistoryPage mounted');
     console.log('mockOrders:', mockOrders);
     
-    // Fetch supplier name from stored authentication data
+    // Fetch authentication data
     const userDetails = getUserDetails();
+    const token = getAuthToken();
+    
+    console.log('🔐 OrderHistoryPage - User Details:', userDetails);
+    console.log('🔐 OrderHistoryPage - Auth Token:', token);
+    console.log('🔐 OrderHistoryPage - Supplier ID:', userDetails?.id);
+    
+    // Fetch supplier name from stored authentication data
     if (userDetails && userDetails.supplierName) {
       setSupplierName(userDetails.supplierName);
     } else {

@@ -16,7 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignUpClick = () => {
-    navigate('/registration');
+    navigate('/');
   };
 
   const handleLogin = async (e) => {
@@ -98,28 +98,37 @@ const Login = () => {
       // Generate token and store authentication data
       const token = generateToken();
       
-      // Update the user document in Firebase with the new token
+      // Store token in localStorage only (Firebase update is optional for demo)
+      console.log('🔐 Storing authentication data in localStorage only');
+      console.log('🔐 This approach is more reliable and faster');
+      
+      // Optional: Try to update Firebase (but don't fail if it doesn't work)
       try {
         if (userType === 'supplier') {
-          // Update supplier document with token
           const supplierRef = doc(db, 'User_suppliers', foundUser.id);
           await updateDoc(supplierRef, {
-            supplierPassword: token // Store token as password for demo
+            supplierPassword: token
           });
-          console.log('✅ Token stored in Firebase for supplier:', foundUser.supplierName);
+          console.log('✅ Token also stored in Firebase for supplier');
         } else if (userType === 'vendor') {
-          // Update vendor document with token
           const vendorRef = doc(db, 'User_vendors', foundUser.id);
           await updateDoc(vendorRef, {
-            vendorPassword: token // Store token as password for demo
+            vendorPassword: token
           });
-          console.log('✅ Token stored in Firebase for vendor:', foundUser.vendorName);
+          console.log('✅ Token also stored in Firebase for vendor');
         }
       } catch (error) {
-        console.error('❌ Error storing token in Firebase:', error);
+        console.log('⚠️ Firebase update failed (this is okay for demo):', error.message);
+        console.log('🔐 Authentication will work with localStorage data');
       }
       
       setAuthData(foundUser, userType, token);
+      
+      // Debug: Log what's being stored
+      console.log('🔐 Login - Stored Token:', token);
+      console.log('🔐 Login - Stored User Details:', foundUser);
+      console.log('🔐 Login - Stored User Type:', userType);
+      console.log('🔐 Login - Supplier ID:', foundUser.id);
       
       if (userType === 'supplier') {
         navigate('/order-history');

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../src/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 const Suppliers = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +14,11 @@ const Suppliers = () => {
     const fetchSuppliers = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'User_suppliers'));
-        const supplierList = querySnapshot.docs.map(doc => doc.data());
+        const supplierList = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        console.log('Suppliers fetched:', supplierList.map(s => ({ id: s.id, name: s.supplierName })));
         setSuppliers(supplierList);
       } catch (error) {
         console.error('Error fetching suppliers:', error);
@@ -34,7 +40,7 @@ const Suppliers = () => {
             <div className="text-gray-500">{t('noSuppliersFound')}</div>
           ) : (
             suppliers.map((supplier, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div key={supplier.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex gap-4 items-start">
                     {supplier.shopImageUrl && (
@@ -88,7 +94,10 @@ const Suppliers = () => {
                     ⏰
                     <span>{t('deliversWithin')} {supplier.deliveryRange || 'N/A'}</span>
                   </div>
-                  <button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition">
+                  <button 
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition"
+                    onClick={() => navigate(`/vendor-dashboard/supplier/${supplier.id}/products`)}
+                  >
                     {t('viewItems')}
                   </button>
                 </div>

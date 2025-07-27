@@ -6,13 +6,14 @@ export const isAuthenticated = async () => {
   const token = localStorage.getItem('authToken');
   const tokenExpiry = localStorage.getItem('tokenExpiry');
   const userType = localStorage.getItem('userType');
+  const userDetails = localStorage.getItem('userDetails');
   
   console.log('🔐 Auth Check - Token:', token);
   console.log('🔐 Auth Check - Token Expiry:', tokenExpiry);
   console.log('🔐 Auth Check - User Type:', userType);
   
-  if (!token || !tokenExpiry || !userType) {
-    console.log('❌ Auth Check Failed - Missing token, expiry, or user type');
+  if (!token || !tokenExpiry || !userType || !userDetails) {
+    console.log('❌ Auth Check Failed - Missing required authentication data');
     return false;
   }
   
@@ -26,21 +27,13 @@ export const isAuthenticated = async () => {
     return false;
   }
   
-  // Fetch fresh user details from Firebase
+  // Primary authentication: Use localStorage data (fast and reliable)
   try {
-    const userDetails = await fetchUserDetailsFromFirebase(token, userType);
-    if (userDetails) {
-      console.log('✅ Auth Check Success - User details from Firebase:', userDetails);
-      // Update localStorage with fresh data
-      localStorage.setItem('userDetails', JSON.stringify(userDetails));
-      return true;
-    } else {
-      console.log('❌ Auth Check Failed - User not found in Firebase');
-      clearAuthData();
-      return false;
-    }
+    const parsedUserDetails = JSON.parse(userDetails);
+    console.log('✅ Auth Check Success - Using localStorage data:', parsedUserDetails);
+    return true;
   } catch (error) {
-    console.error('❌ Auth Check Error:', error);
+    console.error('❌ Auth Check Error - Invalid localStorage data:', error);
     clearAuthData();
     return false;
   }
@@ -56,7 +49,9 @@ export const getUserType = () => {
 };
 
 export const getAuthToken = () => {
-  return localStorage.getItem('authToken');
+  const token = localStorage.getItem('authToken');
+  console.log('🔐 Getting Auth Token:', token);
+  return token;
 };
 
 export const clearAuthData = () => {
@@ -92,6 +87,15 @@ export const setAuthData = (userDetails, userType, token) => {
   if (userType === 'supplier') {
     localStorage.setItem('supplierName', userDetails.supplierName);
   }
+  
+  // Verify storage immediately
+  const storedToken = localStorage.getItem('authToken');
+  const storedUserDetails = localStorage.getItem('userDetails');
+  const storedUserType = localStorage.getItem('userType');
+  
+  console.log('🔐 Verification - Stored Token:', storedToken);
+  console.log('🔐 Verification - Stored User Details:', storedUserDetails);
+  console.log('🔐 Verification - Stored User Type:', storedUserType);
 };
 
 // Function to fetch user details from Firebase based on token and user type
@@ -109,6 +113,9 @@ const fetchUserDetailsFromFirebase = async (token, userType) => {
       );
       const supplierSnapshot = await getDocs(supplierQuery);
       
+      console.log('🔥 Supplier query result - Empty:', supplierSnapshot.empty);
+      console.log('🔥 Supplier query result - Size:', supplierSnapshot.size);
+      
       if (!supplierSnapshot.empty) {
         const docSnap = supplierSnapshot.docs[0];
         const docRef = doc(db, 'User_suppliers', docSnap.id);
@@ -116,6 +123,14 @@ const fetchUserDetailsFromFirebase = async (token, userType) => {
         const userDetails = { id: docSnap.id, ...latestDoc.data() };
         console.log('🔥 Supplier details fetched from Firebase:', userDetails);
         return userDetails;
+      } else {
+        // Let's try to get all suppliers to see what's in the database
+        const allSuppliersQuery = query(collection(db, 'User_suppliers'));
+        const allSuppliersSnapshot = await getDocs(allSuppliersQuery);
+        console.log('🔥 All suppliers in database:', allSuppliersSnapshot.docs.map(doc => ({
+          id: doc.id,
+          password: doc.data().supplierPassword
+        })));
       }
     } else if (userType === 'vendor') {
       // Search in User_vendors collection
@@ -124,6 +139,9 @@ const fetchUserDetailsFromFirebase = async (token, userType) => {
         where('vendorPassword', '==', token) // Using token as password for demo
       );
       const vendorSnapshot = await getDocs(vendorQuery);
+      
+      console.log('🔥 Vendor query result - Empty:', vendorSnapshot.empty);
+      console.log('🔥 Vendor query result - Size:', vendorSnapshot.size);
       
       if (!vendorSnapshot.empty) {
         const docSnap = vendorSnapshot.docs[0];

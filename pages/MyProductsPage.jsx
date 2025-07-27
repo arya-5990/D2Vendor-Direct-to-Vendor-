@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../src/firebase';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import MyProducts from '../components/MyProducts';
 import DeleteModal from '../components/DeleteModal';
-import { mockProducts } from '../src/data/mockData';
-import { getUserDetails } from '../src/utils/auth';
+import { getUserDetails, getAuthToken } from '../src/utils/auth';
 
 function MyProductsPage() {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingPrice, setEditingPrice] = useState(null);
   const [newPrice, setNewPrice] = useState('');
   const [sortBy, setSortBy] = useState('mostOrdered');
@@ -18,21 +20,78 @@ function MyProductsPage() {
   const [productToDelete, setProductToDelete] = useState(null);
   const [supplierName, setSupplierName] = useState('');
 
-  // Fetch supplier name from stored authentication data
+  // Fetch supplier name and products from Firebase
   useEffect(() => {
-    const userDetails = getUserDetails();
-    if (userDetails && userDetails.supplierName) {
-      setSupplierName(userDetails.supplierName);
-    } else {
-      // Fallback to localStorage if not in userDetails
-      const storedName = localStorage.getItem('supplierName');
-      if (storedName) {
-        setSupplierName(storedName);
-      } else {
-        setSupplierName('Supplier'); // Default fallback
+    const fetchSupplierData = async () => {
+      try {
+        const userDetails = getUserDetails();
+        const supplierToken = getAuthToken();
+        
+        if (!userDetails || !supplierToken) {
+          console.error('Authentication error');
+          setLoading(false);
+          return;
+        }
+
+        // Set supplier name
+        if (userDetails.supplierName) {
+          setSupplierName(userDetails.supplierName);
+        } else {
+          const storedName = localStorage.getItem('supplierName');
+          setSupplierName(storedName || 'Supplier');
+        }
+
+        // Fetch products from Firebase
+        await fetchProducts(supplierToken);
+      } catch (error) {
+        console.error('Error fetching supplier data:', error);
+        setLoading(false);
       }
-    }
+    };
+
+    fetchSupplierData();
   }, []);
+
+  // Fetch products from Firebase
+  const fetchProducts = async (supplierToken) => {
+    try {
+      setLoading(true);
+      const userDetails = getUserDetails();
+      
+      // Use actual supplier ID from user details, fallback to token
+      const supplierId = userDetails?.id || userDetails?.supplierId || supplierToken;
+      
+      console.log('🔍 Fetching products for supplier ID:', supplierId);
+      
+      const productsQuery = query(
+        collection(db, 'products'),
+        where('supplierId', '==', supplierId)
+      );
+      
+      const querySnapshot = await getDocs(productsQuery);
+      const fetchedProducts = [];
+      
+      querySnapshot.forEach((doc) => {
+        const productData = doc.data();
+        fetchedProducts.push({
+          id: doc.id,
+          ...productData,
+          // Add default values for missing fields
+          orderCount: productData.orderCount || 0,
+          rating: productData.rating || 0,
+          reviews: productData.reviews || 0,
+          originalPrice: productData.originalPrice || productData.price
+        });
+      });
+      
+      setProducts(fetchedProducts);
+      console.log('✅ Products fetched from Firebase:', fetchedProducts);
+    } catch (error) {
+      console.error('❌ Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter and sort products based on selected criteria
   const getFilteredAndSortedProducts = () => {
@@ -53,13 +112,13 @@ function MyProductsPage() {
     // Then apply the selected sort criteria
     switch (sortBy) {
       case 'mostOrdered':
-        filtered.sort((a, b) => b.orderCount - a.orderCount);
+        filtered.sort((a, b) => (b.orderCount || 0) - (a.orderCount || 0));
         break;
       case 'alphabetical':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'ratings':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       default:
         break;
@@ -70,12 +129,33 @@ function MyProductsPage() {
 
   const sortedProducts = getFilteredAndSortedProducts();
 
-  const toggleStock = (productId) => {
-    setProducts(products.map(product => 
-      product.id === productId 
-        ? { ...product, inStock: !product.inStock }
-        : product
-    ));
+  // Toggle stock status in Firebase
+  const toggleStock = async (productId) => {
+    try {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const newStockStatus = !product.inStock;
+      
+      // Update in Firebase
+      const productRef = doc(db, 'products', productId);
+      await updateDoc(productRef, {
+        inStock: newStockStatus,
+        updatedAt: serverTimestamp()
+      });
+
+      // Update local state
+      setProducts(products.map(p => 
+        p.id === productId 
+          ? { ...p, inStock: newStockStatus }
+          : p
+      ));
+
+      console.log('✅ Stock status updated in Firebase');
+    } catch (error) {
+      console.error('❌ Error updating stock status:', error);
+      alert('Failed to update stock status. Please try again.');
+    }
   };
 
   const startEditPrice = (product) => {
@@ -83,16 +163,37 @@ function MyProductsPage() {
     setNewPrice(product.price.toString());
   };
 
-  const savePrice = (productId) => {
-    if (newPrice && !isNaN(newPrice)) {
+  // Save price to Firebase
+  const savePrice = async (productId) => {
+    if (!newPrice || isNaN(newPrice)) {
+      alert('Please enter a valid price');
+      return;
+    }
+
+    try {
+      const newPriceValue = parseFloat(newPrice);
+      
+      // Update in Firebase
+      const productRef = doc(db, 'products', productId);
+      await updateDoc(productRef, {
+        price: newPriceValue,
+        updatedAt: serverTimestamp()
+      });
+
+      // Update local state
       setProducts(products.map(product => 
         product.id === productId 
-          ? { ...product, price: parseInt(newPrice) }
+          ? { ...product, price: newPriceValue }
           : product
       ));
+
+      setEditingPrice(null);
+      setNewPrice('');
+      console.log('✅ Price updated in Firebase');
+    } catch (error) {
+      console.error('❌ Error updating price:', error);
+      alert('Failed to update price. Please try again.');
     }
-    setEditingPrice(null);
-    setNewPrice('');
   };
 
   const cancelEdit = () => {
@@ -105,11 +206,24 @@ function MyProductsPage() {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
-    if (productToDelete) {
+  // Delete product from Firebase
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      // Delete from Firebase
+      const productRef = doc(db, 'products', productToDelete.id);
+      await deleteDoc(productRef);
+
+      // Update local state
       setProducts(products.filter(product => product.id !== productToDelete.id));
       setShowDeleteConfirm(false);
       setProductToDelete(null);
+      
+      console.log('✅ Product deleted from Firebase');
+    } catch (error) {
+      console.error('❌ Error deleting product:', error);
+      alert('Failed to delete product. Please try again.');
     }
   };
 
@@ -117,6 +231,23 @@ function MyProductsPage() {
     setShowDeleteConfirm(false);
     setProductToDelete(null);
   };
+
+  if (loading) {
+    return (
+      <div className="supplier-homepage-container">
+        <Sidebar products={[]} currentOrders={[]} />
+        <div className="main-content">
+          <Topbar supplierName={supplierName} />
+          <div className="content-area">
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Loading your products...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="supplier-homepage-container">

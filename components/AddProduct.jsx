@@ -25,7 +25,8 @@ function AddProduct({
   handleInputChange, 
   handleAddProduct, 
   resetForm, 
-  showAddSuccess 
+  showAddSuccess,
+  isLoading = false
 }) {
   return (
     <div className="add-product-container">
@@ -115,18 +116,36 @@ function AddProduct({
           <div className="form-group">
             <label htmlFor="productImage">
               <FaUpload className="label-icon" />
-              Product Image URL
+              Product Image
             </label>
-            <div className="image-input-container">
+            <div className="image-upload-container">
               <input
-                type="url"
+                type="file"
                 id="productImage"
-                value={newProduct.image}
-                onChange={(e) => handleInputChange('image', e.target.value)}
-                placeholder="Enter image URL"
-                className="form-input"
+                accept="image/*"
+                onChange={(e) => handleInputChange('imageFile', e.target.files[0])}
+                className="file-input"
               />
-              <FaUpload className="upload-icon" />
+              <div className="upload-area">
+                {newProduct.image ? (
+                  <div className="image-preview">
+                    <img src={newProduct.image} alt="Product preview" />
+                    <button 
+                      type="button" 
+                      className="remove-image-btn"
+                      onClick={() => handleInputChange('image', '')}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="upload-placeholder">
+                    <FaUpload className="upload-icon-large" />
+                    <p>Click to upload image</p>
+                    <span>or drag and drop</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           {newProduct.category !== 'Fruits' && newProduct.category !== 'Vegetables' && (
@@ -179,13 +198,15 @@ function AddProduct({
           <button 
             className="add-product-btn"
             onClick={handleAddProduct}
+            disabled={isLoading}
           >
             <FaSave />
-            Add Product
+            {isLoading ? 'Adding Product...' : 'Add Product'}
           </button>
           <button 
             className="reset-btn"
             onClick={resetForm}
+            disabled={isLoading}
           >
             <FaTimes />
             Reset Form

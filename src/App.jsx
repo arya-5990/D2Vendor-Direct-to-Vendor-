@@ -6,6 +6,7 @@ import ForgotPass from '../pages/forgotPass';
 import VendorDashboard from '../pages/vendorDashboard';
 import SearchFilter from '../pages/searchFilter';
 import Suppliers from '../pages/suppliers';
+import SupplierProductsPage from '../pages/SupplierProductsPage';
 import PriceTracker from '../pages/priceTracker';
 import QuickReorder from '../pages/quickReorder';
 import Reviews from '../pages/reviews';
@@ -29,6 +30,7 @@ function App() {
         }>
           <Route path="search" element={<SearchFilter />} />
           <Route path="suppliers" element={<Suppliers />} />
+          <Route path="supplier/:supplierId/products" element={<SupplierProductsPage />} />
           <Route path="price-tracker" element={<PriceTracker />} />
           <Route path="quick-reorder" element={<QuickReorder />} />
           <Route path="reviews" element={<Reviews />} />
