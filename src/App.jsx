@@ -9,6 +9,10 @@ import Suppliers from '../pages/suppliers';
 import PriceTracker from '../pages/priceTracker';
 import QuickReorder from '../pages/quickReorder';
 import Reviews from '../pages/reviews';
+import AddProductPage from '../pages/AddProductPage';
+import MyProductsPage from '../pages/MyProductsPage';
+import OrderHistoryPage from '../pages/OrderHistoryPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -18,13 +22,32 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/forgot-Pass" element={<ForgotPass />} />
-        <Route path="/vendor-dashboard" element={<VendorDashboard />}>
+        <Route path="/vendor-dashboard" element={
+          <ProtectedRoute allowedUserTypes={['vendor']}>
+            <VendorDashboard />
+          </ProtectedRoute>
+        }>
           <Route path="search" element={<SearchFilter />} />
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="price-tracker" element={<PriceTracker />} />
           <Route path="quick-reorder" element={<QuickReorder />} />
           <Route path="reviews" element={<Reviews />} />
         </Route>
+        <Route path="/order-history" element={
+          <ProtectedRoute allowedUserTypes={['supplier']}>
+            <OrderHistoryPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/my-products" element={
+          <ProtectedRoute allowedUserTypes={['supplier']}>
+            <MyProductsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/add-product" element={
+          <ProtectedRoute allowedUserTypes={['supplier']}>
+            <AddProductPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
 import { db } from '../src/firebase';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { generateToken, setAuthData } from '../src/utils/auth';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -93,17 +94,38 @@ const Login = () => {
     if (foundUser) {
       console.log('Final user details being stored in localStorage:', foundUser);
       alert(t('loginSuccess', { userType }));
-      // Generate a random 32-character hex token
-      const token = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-      localStorage.setItem('sessionToken', token);
-      localStorage.setItem('userDetails', JSON.stringify(foundUser));
-      if (userType === 'supplier') {
-        localStorage.setItem('supplierName', foundUser.supplierName);
+      
+      // Generate token and store authentication data
+      const token = generateToken();
+      
+      // Update the user document in Firebase with the new token
+      try {
+        if (userType === 'supplier') {
+          // Update supplier document with token
+          const supplierRef = doc(db, 'User_suppliers', foundUser.id);
+          await updateDoc(supplierRef, {
+            supplierPassword: token // Store token as password for demo
+          });
+          console.log('✅ Token stored in Firebase for supplier:', foundUser.supplierName);
+        } else if (userType === 'vendor') {
+          // Update vendor document with token
+          const vendorRef = doc(db, 'User_vendors', foundUser.id);
+          await updateDoc(vendorRef, {
+            vendorPassword: token // Store token as password for demo
+          });
+          console.log('✅ Token stored in Firebase for vendor:', foundUser.vendorName);
+        }
+      } catch (error) {
+        console.error('❌ Error storing token in Firebase:', error);
       }
-      if (userType === 'vendor') {
+      
+      setAuthData(foundUser, userType, token);
+      
+      if (userType === 'supplier') {
+        navigate('/order-history');
+      } else if (userType === 'vendor') {
         navigate('/vendor-dashboard');
       }
-      // You can add more redirects for suppliers if needed
     } else {
       alert(t('invalidCredentials'));
     }
