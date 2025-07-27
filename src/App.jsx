@@ -304,8 +304,9 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Default route redirects to order history */}
-          <Route path="/" element={<Navigate to="/order-history" replace />} />
+          {/* Hero page - landing page */}
+          <Route path="/" element={<Hero />} />
+          <Route path="/hero" element={<Hero />} />
           
           {/* Main application routes */}
           <Route path="/order-history" element={<SupplierDashboardLayout><OrderHistoryWrapper /></SupplierDashboardLayout>} />
@@ -325,8 +326,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           
-          {/* Catch all route - redirect to order history */}
-          <Route path="*" element={<Navigate to="/order-history" replace />} />
+          {/* Catch all route - redirect to hero page */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
