@@ -55,6 +55,7 @@ const resources = {
       register: 'Register',
       vendorRegistration: 'Vendor Registration',
       supplierRegistration: 'Supplier Registration',
+      deliveryRangePlaceholder: 'e.g., 5 km, 10 km, Within city',
       vendorName: 'Vendor Name',
       vendorMobile: 'Mobile Number',
       vendorEmail: 'Email',
@@ -65,6 +66,7 @@ const resources = {
       supplierContact: 'Contact Number',
       supplierEmail: 'Email',
       supplierPassword: 'Password',
+      deliveryRange: 'Delivery Range',
       createAccount: 'Create Account',
       alreadyRegistered: 'Already registered?',
       
@@ -273,6 +275,7 @@ const resources = {
       supplierContact: 'संपर्क नंबर',
       supplierEmail: 'ईमेल',
       supplierPassword: 'पासवर्ड',
+      deliveryRange: 'डिलीवरी रेंज',
       createAccount: 'खाता बनाएं',
       alreadyRegistered: 'पहले से पंजीकृत?',
       

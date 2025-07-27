@@ -29,6 +29,7 @@ const Registration = () => {
     supplierAadhaar: '',
     supplierPassword: '',
     shopImage: null,
+    deliveryRange: '', // New field for delivery range
     // Vendor fields
     vendorName: '',
     vendorMobile: '',
@@ -147,6 +148,10 @@ const Registration = () => {
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
                 <input type="password" name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder={t('supplierPasswordPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+              </div>
+              <div className="relative flex items-center">
+                <span className="absolute left-4 text-orange-400 text-2xl">🚚</span>
+                <input type="text" name="deliveryRange" value={form.deliveryRange} onChange={handleChange} required placeholder={t('deliveryRangePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📷</span>

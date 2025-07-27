@@ -86,7 +86,7 @@ const Suppliers = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     ⏰
-                    <span>{t('deliversWithin')} {supplier.deliveryTime || 'N/A'}</span>
+                    <span>{t('deliversWithin')} {supplier.deliveryRange || 'N/A'}</span>
                   </div>
                   <button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition">
                     {t('viewItems')}
