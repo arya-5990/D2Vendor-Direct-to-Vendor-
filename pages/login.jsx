@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
 import { db } from '../src/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,8 +29,12 @@ const Login = () => {
     );
     const supplierSnapshot = await getDocs(supplierQuery);
     if (!supplierSnapshot.empty) {
-      foundUser = supplierSnapshot.docs[0].data();
+      const docSnap = supplierSnapshot.docs[0];
+      const docRef = doc(db, 'User_suppliers', docSnap.id);
+      const latestDoc = await getDoc(docRef);
+      foundUser = { id: docSnap.id, ...latestDoc.data() };
       userType = 'supplier';
+      console.log('Supplier (email) details fetched:', foundUser);
     } else {
       // Try phone number for suppliers
       const supplierPhoneQuery = query(
@@ -40,8 +44,12 @@ const Login = () => {
       );
       const supplierPhoneSnapshot = await getDocs(supplierPhoneQuery);
       if (!supplierPhoneSnapshot.empty) {
-        foundUser = supplierPhoneSnapshot.docs[0].data();
+        const docSnap = supplierPhoneSnapshot.docs[0];
+        const docRef = doc(db, 'User_suppliers', docSnap.id);
+        const latestDoc = await getDoc(docRef);
+        foundUser = { id: docSnap.id, ...latestDoc.data() };
         userType = 'supplier';
+        console.log('Supplier (phone) details fetched:', foundUser);
       }
     }
     // Check in User_vendors if not found
@@ -54,8 +62,12 @@ const Login = () => {
       );
       const vendorEmailSnapshot = await getDocs(vendorEmailQuery);
       if (!vendorEmailSnapshot.empty) {
-        foundUser = vendorEmailSnapshot.docs[0].data();
+        const docSnap = vendorEmailSnapshot.docs[0];
+        const docRef = doc(db, 'User_vendors', docSnap.id);
+        const latestDoc = await getDoc(docRef);
+        foundUser = { id: docSnap.id, ...latestDoc.data() };
         userType = 'vendor';
+        console.log('Vendor (email) details fetched:', foundUser);
       } else {
         // Try phone
         const vendorPhoneQuery = query(
@@ -65,16 +77,28 @@ const Login = () => {
         );
         const vendorPhoneSnapshot = await getDocs(vendorPhoneQuery);
         if (!vendorPhoneSnapshot.empty) {
-          foundUser = vendorPhoneSnapshot.docs[0].data();
+          const docSnap = vendorPhoneSnapshot.docs[0];
+          const docRef = doc(db, 'User_vendors', docSnap.id);
+          const latestDoc = await getDoc(docRef);
+          foundUser = { id: docSnap.id, ...latestDoc.data() };
           userType = 'vendor';
+          console.log('Vendor (phone) details fetched:', foundUser);
         }
       }
     }
     setLoading(false);
     if (foundUser) {
+      console.log('Final user details being stored in localStorage:', foundUser);
       alert(`Login successful as ${userType}!`);
+      // Generate a random 32-character hex token
+      const token = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+      localStorage.setItem('sessionToken', token);
+      localStorage.setItem('userDetails', JSON.stringify(foundUser));
+      if (userType === 'supplier') {
+        localStorage.setItem('supplierName', foundUser.supplierName);
+      }
       if (userType === 'vendor') {
-        navigate('/vendor_dashboard');
+        navigate('/vendor-dashboard');
       }
       // You can add more redirects for suppliers if needed
     } else {

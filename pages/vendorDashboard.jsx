@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const navItems = [
   { name: 'Search & Filter', path: '/vendor-dashboard/search' },
@@ -12,8 +13,32 @@ const navItems = [
 
 const VendorDashboard = () => {
   const location = useLocation();
-  const [lang, setLang] = useState('EN');
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const [lang, setLang] = useState(i18n.language || 'en');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [supplierName, setSupplierName] = useState('Supplier Name');
+
+  useEffect(() => {
+    const userDetailsStr = localStorage.getItem('userDetails');
+    if (userDetailsStr) {
+      const userDetails = JSON.parse(userDetailsStr);
+      setSupplierName(userDetails.supplierName || userDetails.vendorName || t('supplierName'));
+    }
+  }, [t]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('supplierName');
+    localStorage.removeItem('sessionToken');
+    setProfileOpen(false);
+    navigate('/');
+  };
+
+  const handleLanguageSwitch = () => {
+    const newLang = lang === 'en' ? 'hi' : 'en';
+    setLang(newLang);
+    i18n.changeLanguage(newLang);
+  };
 
   // Check if we're on the main dashboard page (no nested route)
   const isMainDashboard = location.pathname === '/vendor-dashboard';
@@ -53,9 +78,9 @@ const VendorDashboard = () => {
             {/* Language Switch */}
             <button
               className="px-3 py-2 rounded-lg bg-orange-50 text-orange-600 font-semibold hover:bg-orange-100 transition"
-              onClick={() => setLang(lang === 'EN' ? 'HI' : 'EN')}
+              onClick={handleLanguageSwitch}
             >
-              {lang === 'EN' ? 'English' : 'हिंदी'}
+              {t('language')}
             </button>
             {/* Profile Dropdown */}
             <div className="relative">
@@ -63,13 +88,18 @@ const VendorDashboard = () => {
                 className="px-4 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold focus:outline-none"
                 onClick={() => setProfileOpen((v) => !v)}
               >
-                Supplier Name
+                {supplierName}
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                   <Link to="#" className="block px-4 py-2 hover:bg-orange-50">Settings</Link>
                   <Link to="#" className="block px-4 py-2 hover:bg-orange-50">Language</Link>
-                  <Link to="#" className="block px-4 py-2 hover:bg-orange-50 text-red-500">Logout</Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 hover:bg-orange-50 text-red-500"
+                  >
+                    Logout
+                  </button>
                 </div>
               )}
             </div>
@@ -79,32 +109,32 @@ const VendorDashboard = () => {
         <div className="flex-1 p-10">
           {isMainDashboard ? (
             <div className="bg-white rounded-2xl shadow p-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome to VendorHub Dashboard</h1>
-              <p className="text-gray-600 mb-6">Manage your orders, track prices, and connect with suppliers. Use the sidebar to navigate to different features.</p>
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">{t('welcome')}</h1>
+              <p className="text-gray-600 mb-6">{t('manage')}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-orange-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-orange-600 mb-2">Quick Actions</h3>
+                  <h3 className="text-lg font-semibold text-orange-600 mb-2">{t('quickActions')}</h3>
                   <ul className="space-y-2 text-sm">
-                    <li>• Search for suppliers and items</li>
-                    <li>• Track price trends</li>
-                    <li>• Reorder saved sets</li>
-                    <li>• Leave reviews</li>
+                    <li>• {t('searchItems')}</li>
+                    <li>• {t('trackPrices')}</li>
+                    <li>• {t('reorder')}</li>
+                    <li>• {t('leaveReviews')}</li>
                   </ul>
                 </div>
                 <div className="bg-green-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-green-600 mb-2">Recent Activity</h3>
+                  <h3 className="text-lg font-semibold text-green-600 mb-2">{t('recentActivity')}</h3>
                   <ul className="space-y-2 text-sm">
-                    <li>• 3 orders this week</li>
-                    <li>• 2 price alerts</li>
-                    <li>• 1 review submitted</li>
+                    <li>• 3 {t('orders')}</li>
+                    <li>• 2 {t('priceAlerts')}</li>
+                    <li>• 1 {t('reviewSubmitted')}</li>
                   </ul>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-600 mb-2">Tips</h3>
+                  <h3 className="text-lg font-semibold text-blue-600 mb-2">{t('tips')}</h3>
                   <ul className="space-y-2 text-sm">
-                    <li>• Use filters to find best suppliers</li>
-                    <li>• Save frequently ordered items</li>
-                    <li>• Check price trends regularly</li>
+                    <li>• {t('useFilters')}</li>
+                    <li>• {t('saveItems')}</li>
+                    <li>• {t('checkTrends')}</li>
                   </ul>
                 </div>
               </div>
