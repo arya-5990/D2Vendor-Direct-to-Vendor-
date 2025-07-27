@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
@@ -6,6 +7,7 @@ import { db } from '../src/firebase';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState(''); // email or phone
   const [password, setPassword] = useState('');
@@ -89,7 +91,7 @@ const Login = () => {
     setLoading(false);
     if (foundUser) {
       console.log('Final user details being stored in localStorage:', foundUser);
-      alert(`Login successful as ${userType}!`);
+      alert(t('loginSuccess', { userType }));
       // Generate a random 32-character hex token
       const token = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
       localStorage.setItem('sessionToken', token);
@@ -102,7 +104,7 @@ const Login = () => {
       }
       // You can add more redirects for suppliers if needed
     } else {
-      alert('Invalid credentials. Please try again.');
+      alert(t('invalidCredentials'));
     }
   };
 
@@ -119,7 +121,7 @@ const Login = () => {
           </div>
           {/* Tagline */}
           <div className="mt-2 text-center font-bold" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, color: '#FF3D00' }}>
-            Bringing Street Delights to Your Screen!
+            {t('bringStreetDelights')}
           </div>
         </div>
         {/* Floating Doodles/Icons (optional, for vibrancy) */}
@@ -138,13 +140,13 @@ const Login = () => {
             className="h-[60px] w-[60px] object-contain rounded-lg mr-4" 
           />
           <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 24, color: '#FF3D00' }}>
-            D2VENDORS
+            {t('d2Vendors')}
           </span>
         </div>
         {/* Login Form */}
         <div className="w-full max-w-md mx-auto">
           <h2 className="mb-8 font-bold" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, color: '#212121' }}>
-            Welcome Back!
+            {t('welcomeBack')}
           </h2>
           <form className="flex flex-col gap-6" onSubmit={handleLogin}>
             {/* Email Field */}
@@ -152,7 +154,7 @@ const Login = () => {
               type="text"
               value={identifier}
               onChange={e => setIdentifier(e.target.value)}
-              placeholder="Enter your email/phone number"
+              placeholder={t('emailOrPhone')}
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
               disabled={loading}
@@ -162,7 +164,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder={t('password')}
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
               disabled={loading}
@@ -174,7 +176,7 @@ const Login = () => {
                 className="text-xs font-medium hover:underline"
                 style={{ color: '#F57C00', fontFamily: 'Poppins, sans-serif', fontSize: 12 }}
               >
-                Forgot Password?
+                {t('forgotPassword')}
               </a>
             </div>
             {/* Login Button */}
@@ -192,12 +194,12 @@ const Login = () => {
               onMouseOut={e => (e.target.style.background = '#FF3D00')}
               disabled={loading}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? t('loggingIn') : t('login')}
             </button>
             {/* OR Divider */}
             <div className="flex items-center gap-4 my-2">
               <div className="flex-1 h-px bg-[#E0E0E0]"></div>
-              <span className="text-xs" style={{ color: '#9E9E9E' }}>OR</span>
+              <span className="text-xs" style={{ color: '#9E9E9E' }}>{t('or')}</span>
               <div className="flex-1 h-px bg-[#E0E0E0]"></div>
             </div>
             {/* Google Login Button */}
@@ -205,14 +207,15 @@ const Login = () => {
           {/* comment */}
           {/* Register Prompt */}
           <div className="mt-8 text-center text-sm" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14 }}>
-            Don't have an account?{' '}
+            {t('dontHaveAccount')}
+            {' '}
             <a 
               href="#" 
               className="font-semibold hover:underline" 
               style={{ color: '#F57C00' }}
               onClick={handleSignUpClick}
             >
-              Sign up
+              {t('signUp')}
             </a>
           </div>
         </div>

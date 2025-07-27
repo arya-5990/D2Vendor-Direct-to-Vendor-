@@ -1,9 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import logo from '../images/D2VENDOR_logo.jpg';
 import heroImg from '../images/indian-street-food-free-vector.jpg';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen w-full relative overflow-hidden" style={{ backgroundColor: '#FFF5F0' }}>
       {/* Background Pattern */}
@@ -55,7 +58,7 @@ const Hero = () => {
                     fontFamily: "'Poppins', sans-serif"
                   }}
                 >
-                  Street Food Revolution
+                  {t('streetFoodRevolution')}
                 </span>
               </div>
             </div>
@@ -72,7 +75,7 @@ const Hero = () => {
                   fontWeight: '600'
                 }}
               >
-                ABOUT
+                {t('about')}
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-400 group-hover:w-full transition-all duration-300"></div>
               </a>
               <a 
@@ -85,7 +88,7 @@ const Hero = () => {
                   fontWeight: '600'
                 }}
               >
-                CONTACT
+                {t('contact')}
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-400 group-hover:w-full transition-all duration-300"></div>
               </a>
             </nav>
@@ -118,7 +121,7 @@ const Hero = () => {
                   fontFamily: "'Poppins', sans-serif"
                 }}
               >
-                Connecting Street Food Lovers
+                {t('connectingStreetFood')}
               </span>
             </div>
 
@@ -135,8 +138,8 @@ const Hero = () => {
                   lineHeight: 1.1
                 }}
               >
-                EMPOWERING<br />
-                <span style={{ color: '#FF6F3C' }}>EVERY STREET BITE</span>
+                {t('empoweringEveryBite')}<br />
+                <span style={{ color: '#FF6F3C' }}>{t('everyStreetBite')}</span>
               </h1>
               
               <p 
@@ -147,7 +150,7 @@ const Hero = () => {
                   lineHeight: 1.6
                 }}
               >
-                Discover authentic street food vendors, connect with local suppliers, and be part of the street food revolution. From traditional recipes to modern twists, we bring the world's flavors to your doorstep.
+                {t('heroDescription')}
               </p>
             </div>
 
@@ -169,7 +172,7 @@ const Hero = () => {
                   textDecoration: 'none'
                 }}
               >
-                <span className="relative z-10">Become a Supplier</span>
+                <span className="relative z-10">{t('becomeSupplier')}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
               
@@ -189,14 +192,14 @@ const Hero = () => {
                   textDecoration: 'none'
                 }}
               >
-                <span className="relative z-10">BECOME A VENDOR</span>
+                <span className="relative z-10">{t('becomeVendor')}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
             </div>
 
             {/* Login Link */}
             <div className="text-gray-600 text-center lg:text-left">
-              Already have an account?{' '}
+              {t('alreadyHaveAccount')}{' '}
               <Link 
                 to="/login" 
                 className="font-medium underline hover:opacity-80 transition-opacity"
@@ -205,7 +208,7 @@ const Hero = () => {
                   fontFamily: "'Poppins', sans-serif"
                 }}
               >
-                Login
+                {t('login')}
               </Link>
             </div>
           </div>

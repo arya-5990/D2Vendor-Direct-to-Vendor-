@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios'; // Added for Cloudinary upload
 import { db } from '../src/firebase'; // Import Firestore db
 import { collection, addDoc } from 'firebase/firestore'; // Firestore functions
+import { useTranslation } from 'react-i18next';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -13,6 +14,7 @@ const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dtintjmp4/image/upload';
 const CLOUDINARY_UPLOAD_PRESET = 'hackathon_unsigned'; // <-- Set this to your actual unsigned upload preset from Cloudinary
 
 const Registration = () => {
+  const { t } = useTranslation();
   const query = useQuery();
   const type = query.get('type'); // 'supplier' or 'vendor'
 
@@ -91,9 +93,9 @@ const Registration = () => {
     try {
       const collectionName = type === 'vendor' ? 'User_vendors' : 'User_suppliers';
       await addDoc(collection(db, collectionName), registrationData);
-      alert('Registration submitted and stored successfully!');
+      alert(t('registrationSuccess'));
     } catch (error) {
-      alert('Failed to store registration data: ' + error.message);
+      alert(t('registrationFailed') + error.message);
     }
   };
 
@@ -120,36 +122,36 @@ const Registration = () => {
             <>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">👤</span>
-                <input type="text" name="supplierName" value={form.supplierName} onChange={handleChange} required placeholder="Name" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="supplierName" value={form.supplierName} onChange={handleChange} required placeholder={t('supplierNamePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🏪</span>
-                <input type="text" name="shopName" value={form.shopName} onChange={handleChange} required placeholder="Shop Name" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="shopName" value={form.shopName} onChange={handleChange} required placeholder={t('shopNamePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📍</span>
-                <input type="text" name="shopAddress" value={form.shopAddress} onChange={handleChange} required placeholder="Shop Address" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="shopAddress" value={form.shopAddress} onChange={handleChange} required placeholder={t('shopAddressPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📞</span>
-                <input type="tel" name="supplierContact" value={form.supplierContact} onChange={handleChange} required placeholder="Contact Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="tel" name="supplierContact" value={form.supplierContact} onChange={handleChange} required placeholder={t('supplierContactPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📧</span>
-                <input type="email" name="supplierEmail" value={form.supplierEmail} onChange={handleChange} placeholder="Email (optional)" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="email" name="supplierEmail" value={form.supplierEmail} onChange={handleChange} placeholder={t('supplierEmailPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🆔</span>
-                <input type="text" name="supplierAadhaar" value={form.supplierAadhaar} onChange={handleChange} required placeholder="Aadhaar Card Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="supplierAadhaar" value={form.supplierAadhaar} onChange={handleChange} required placeholder={t('supplierAadhaarPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
-                <input type="password" name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="password" name="supplierPassword" value={form.supplierPassword} onChange={handleChange} required placeholder={t('supplierPasswordPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📷</span>
                 <input type="file" name="shopImage" accept="image/*" onChange={handleChange} required className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
-                <span className="ml-2 text-base text-gray-400">Shop Image</span>
+                <span className="ml-2 text-base text-gray-400">{t('shopImageLabel')}</span>
               </div>
             </>
           )}
@@ -158,37 +160,37 @@ const Registration = () => {
             <>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">👤</span>
-                <input type="text" name="vendorName" value={form.vendorName} onChange={handleChange} required placeholder="Name" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="vendorName" value={form.vendorName} onChange={handleChange} required placeholder={t('vendorNamePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📞</span>
-                <input type="tel" name="vendorMobile" value={form.vendorMobile} onChange={handleChange} required placeholder="Mobile Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="tel" name="vendorMobile" value={form.vendorMobile} onChange={handleChange} required placeholder={t('vendorMobilePlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🏠</span>
-                <input type="text" name="vendorResidential" value={form.vendorResidential} onChange={handleChange} required placeholder="Residential Address" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="vendorResidential" value={form.vendorResidential} onChange={handleChange} required placeholder={t('vendorResidentialPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🏪</span>
-                <input type="text" name="vendorShop" value={form.vendorShop} onChange={handleChange} required placeholder="Shop Address" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="vendorShop" value={form.vendorShop} onChange={handleChange} required placeholder={t('vendorShopPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🆔</span>
-                <input type="text" name="vendorAadhaar" value={form.vendorAadhaar} onChange={handleChange} required placeholder="Aadhaar Card Number" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="text" name="vendorAadhaar" value={form.vendorAadhaar} onChange={handleChange} required placeholder={t('vendorAadhaarPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">🔒</span>
-                <input type="password" name="vendorPassword" value={form.vendorPassword} onChange={handleChange} required placeholder="Password" className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
+                <input type="password" name="vendorPassword" value={form.vendorPassword} onChange={handleChange} required placeholder={t('vendorPasswordPlaceholder')} className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
               </div>
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-orange-400 text-2xl">📸</span>
                 <input type="file" name="vendorSelfie" accept="image/*" onChange={handleChange} required className="pl-14 py-4 text-lg input input-bordered w-full rounded-xl focus:ring-2 focus:ring-orange-300" />
-                <span className="ml-2 text-base text-gray-400">Selfie Verification</span>
+                <span className="ml-2 text-base text-gray-400">{t('vendorSelfieLabel')}</span>
               </div>
             </>
           )}
           <button type="submit" className="w-full py-4 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold text-xl shadow-md hover:from-orange-500 hover:to-orange-600 transition-all duration-200 mt-4">
-            Register
+            {t('registerButton')}
           </button>
         </form>
       </div>
