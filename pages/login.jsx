@@ -1,13 +1,120 @@
 import React, { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 // import firebaseApp from '../src/firebase'; // Only if you use firebase in this file
 
+import { useTranslation } from 'react-i18next';
+
+import { useNavigate } from 'react-router-dom';
+import firebaseApp from '../src/firebase';
+import { db } from '../src/firebase';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+
+
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+
+  const [identifier, setIdentifier] = useState(''); // email or phone
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignUpClick = () => {
-    navigate('/');
+    navigate('/registration');
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    let foundUser = null;
+    let userType = null;
+    // Check in User_suppliers
+    const supplierQuery = query(
+      collection(db, 'User_suppliers'),
+      where('supplierPassword', '==', password),
+      // Match either email or phone
+      where('supplierEmail', '==', identifier)
+    );
+    const supplierSnapshot = await getDocs(supplierQuery);
+    if (!supplierSnapshot.empty) {
+      const docSnap = supplierSnapshot.docs[0];
+      const docRef = doc(db, 'User_suppliers', docSnap.id);
+      const latestDoc = await getDoc(docRef);
+      foundUser = { id: docSnap.id, ...latestDoc.data() };
+      userType = 'supplier';
+      console.log('Supplier (email) details fetched:', foundUser);
+    } else {
+      // Try phone number for suppliers
+      const supplierPhoneQuery = query(
+        collection(db, 'User_suppliers'),
+        where('supplierPassword', '==', password),
+        where('supplierContact', '==', identifier)
+      );
+      const supplierPhoneSnapshot = await getDocs(supplierPhoneQuery);
+      if (!supplierPhoneSnapshot.empty) {
+        const docSnap = supplierPhoneSnapshot.docs[0];
+        const docRef = doc(db, 'User_suppliers', docSnap.id);
+        const latestDoc = await getDoc(docRef);
+        foundUser = { id: docSnap.id, ...latestDoc.data() };
+        userType = 'supplier';
+        console.log('Supplier (phone) details fetched:', foundUser);
+      }
+    }
+    // Check in User_vendors if not found
+    if (!foundUser) {
+      // Try email (if any)
+      const vendorEmailQuery = query(
+        collection(db, 'User_vendors'),
+        where('vendorPassword', '==', password),
+        where('vendorEmail', '==', identifier)
+      );
+      const vendorEmailSnapshot = await getDocs(vendorEmailQuery);
+      if (!vendorEmailSnapshot.empty) {
+        const docSnap = vendorEmailSnapshot.docs[0];
+        const docRef = doc(db, 'User_vendors', docSnap.id);
+        const latestDoc = await getDoc(docRef);
+        foundUser = { id: docSnap.id, ...latestDoc.data() };
+        userType = 'vendor';
+        console.log('Vendor (email) details fetched:', foundUser);
+      } else {
+        // Try phone
+        const vendorPhoneQuery = query(
+          collection(db, 'User_vendors'),
+          where('vendorPassword', '==', password),
+          where('vendorMobile', '==', identifier)
+        );
+        const vendorPhoneSnapshot = await getDocs(vendorPhoneQuery);
+        if (!vendorPhoneSnapshot.empty) {
+          const docSnap = vendorPhoneSnapshot.docs[0];
+          const docRef = doc(db, 'User_vendors', docSnap.id);
+          const latestDoc = await getDoc(docRef);
+          foundUser = { id: docSnap.id, ...latestDoc.data() };
+          userType = 'vendor';
+          console.log('Vendor (phone) details fetched:', foundUser);
+        }
+      }
+    }
+    setLoading(false);
+    if (foundUser) {
+      console.log('Final user details being stored in localStorage:', foundUser);
+      alert(t('loginSuccess', { userType }));
+      // Generate a random 32-character hex token
+      const token = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+      localStorage.setItem('sessionToken', token);
+      localStorage.setItem('userDetails', JSON.stringify(foundUser));
+      if (userType === 'supplier') {
+        localStorage.setItem('supplierName', foundUser.supplierName);
+      }
+      if (userType === 'vendor') {
+        navigate('/vendor-dashboard');
+      }
+      // You can add more redirects for suppliers if needed
+    } else {
+      alert(t('invalidCredentials'));
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -27,7 +134,7 @@ const Login = () => {
           </div>
           {/* Tagline */}
           <div className="mt-2 text-center font-bold" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, color: '#FF3D00' }}>
-            Bringing Street Delights to Your Screen!
+            {t('bringStreetDelights')}
           </div>
         </div>
         {/* Floating Doodles/Icons (optional, for vibrancy) */}
@@ -46,23 +153,27 @@ const Login = () => {
             className="h-[60px] w-[60px] object-contain rounded-lg mr-4" 
           />
           <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, fontSize: 24, color: '#FF3D00' }}>
-            D2VENDORS
+            {t('d2Vendors')}
           </span>
         </div>
         {/* Login Form */}
         <div className="w-full max-w-md mx-auto">
           <h2 className="mb-8 font-bold" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, color: '#212121' }}>
-            Welcome Back!
+            {t('welcomeBack')}
           </h2>
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={handleLogin}>
             {/* Email Field */}
             <input
-              type="email"
-              placeholder="Enter your email/phone number"
+              type="text"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
+              placeholder={t('emailOrPhone')}
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
+              disabled={loading}
             />
             {/* Password Field */}
+
             <div className="relative flex items-center">
               <span className="absolute left-4 flex items-center h-full">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,6 +198,34 @@ const Login = () => {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                 </svg>
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder={t('password')}
+                className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200 pr-12"
+                style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                disabled={loading}
+              >
+                {showPassword ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+
               </button>
             </div>
             {/* Forgot Password */}
@@ -95,8 +234,12 @@ const Login = () => {
                 href="#"
                 className="text-xs font-medium hover:underline"
                 style={{ color: '#F57C00', fontFamily: 'Poppins, sans-serif', fontSize: 12 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/forgot-Pass');
+                }}
               >
-                Forgot Password?
+                {t('forgotPassword')}
               </a>
             </div>
             {/* Login Button */}
@@ -112,13 +255,14 @@ const Login = () => {
               }}
               onMouseOver={e => (e.target.style.background = '#E53935')}
               onMouseOut={e => (e.target.style.background = '#FF3D00')}
+              disabled={loading}
             >
-              Login
+              {loading ? t('loggingIn') : t('login')}
             </button>
             {/* OR Divider */}
             <div className="flex items-center gap-4 my-2">
               <div className="flex-1 h-px bg-[#E0E0E0]"></div>
-              <span className="text-xs" style={{ color: '#9E9E9E' }}>OR</span>
+              <span className="text-xs" style={{ color: '#9E9E9E' }}>{t('or')}</span>
               <div className="flex-1 h-px bg-[#E0E0E0]"></div>
             </div>
             {/* Google Login Button */}
@@ -126,14 +270,15 @@ const Login = () => {
           {/* comment */}
           {/* Register Prompt */}
           <div className="mt-8 text-center text-sm" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 14 }}>
-            Don't have an account?{' '}
+            {t('dontHaveAccount')}
+            {' '}
             <a 
               href="#" 
               className="font-semibold hover:underline" 
               style={{ color: '#F57C00' }}
               onClick={handleSignUpClick}
             >
-              Sign up
+              {t('signUp')}
             </a>
           </div>
         </div>
