@@ -195,6 +195,10 @@ const Login = () => {
                 href="#"
                 className="text-xs font-medium hover:underline"
                 style={{ color: '#F57C00', fontFamily: 'Poppins, sans-serif', fontSize: 12 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/forgot-Pass');
+                }}
               >
                 {t('forgotPassword')}
               </a>

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Hero from '../pages/hero';
 import Login from '../pages/login';
 import Registration from '../pages/registration';
+import ForgotPass from '../pages/forgotPass';
 import VendorDashboard from '../pages/vendorDashboard';
 import SearchFilter from '../pages/searchFilter';
 import Suppliers from '../pages/suppliers';
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Hero />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
+        <Route path="/forgot-Pass" element={<ForgotPass />} />
         <Route path="/vendor-dashboard" element={<VendorDashboard />}>
           <Route path="search" element={<SearchFilter />} />
           <Route path="suppliers" element={<Suppliers />} />
