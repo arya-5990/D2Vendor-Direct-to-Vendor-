@@ -92,8 +92,6 @@ const VendorDashboard = () => {
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
-                  <Link to="#" className="block px-4 py-2 hover:bg-orange-50">Settings</Link>
-                  <Link to="#" className="block px-4 py-2 hover:bg-orange-50">Language</Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 hover:bg-orange-50 text-red-500"
