@@ -1,13 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import firebaseApp from '../src/firebase';
+import { db } from '../src/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [identifier, setIdentifier] = useState(''); // email or phone
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSignUpClick = () => {
-    navigate('/');
+    navigate('/registration');
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    let foundUser = null;
+    let userType = null;
+    // Check in User_suppliers
+    const supplierQuery = query(
+      collection(db, 'User_suppliers'),
+      where('supplierPassword', '==', password),
+      // Match either email or phone
+      where('supplierEmail', '==', identifier)
+    );
+    const supplierSnapshot = await getDocs(supplierQuery);
+    if (!supplierSnapshot.empty) {
+      foundUser = supplierSnapshot.docs[0].data();
+      userType = 'supplier';
+    } else {
+      // Try phone number for suppliers
+      const supplierPhoneQuery = query(
+        collection(db, 'User_suppliers'),
+        where('supplierPassword', '==', password),
+        where('supplierContact', '==', identifier)
+      );
+      const supplierPhoneSnapshot = await getDocs(supplierPhoneQuery);
+      if (!supplierPhoneSnapshot.empty) {
+        foundUser = supplierPhoneSnapshot.docs[0].data();
+        userType = 'supplier';
+      }
+    }
+    // Check in User_vendors if not found
+    if (!foundUser) {
+      // Try email (if any)
+      const vendorEmailQuery = query(
+        collection(db, 'User_vendors'),
+        where('vendorPassword', '==', password),
+        where('vendorEmail', '==', identifier)
+      );
+      const vendorEmailSnapshot = await getDocs(vendorEmailQuery);
+      if (!vendorEmailSnapshot.empty) {
+        foundUser = vendorEmailSnapshot.docs[0].data();
+        userType = 'vendor';
+      } else {
+        // Try phone
+        const vendorPhoneQuery = query(
+          collection(db, 'User_vendors'),
+          where('vendorPassword', '==', password),
+          where('vendorMobile', '==', identifier)
+        );
+        const vendorPhoneSnapshot = await getDocs(vendorPhoneQuery);
+        if (!vendorPhoneSnapshot.empty) {
+          foundUser = vendorPhoneSnapshot.docs[0].data();
+          userType = 'vendor';
+        }
+      }
+    }
+    setLoading(false);
+    if (foundUser) {
+      alert(`Login successful as ${userType}!`);
+      if (userType === 'vendor') {
+        navigate('/vendor_dashboard');
+      }
+      // You can add more redirects for suppliers if needed
+    } else {
+      alert('Invalid credentials. Please try again.');
+    }
   };
 
   return (
@@ -50,20 +122,26 @@ const Login = () => {
           <h2 className="mb-8 font-bold" style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, color: '#212121' }}>
             Welcome Back!
           </h2>
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={handleLogin}>
             {/* Email Field */}
             <input
-              type="email"
+              type="text"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
               placeholder="Enter your email/phone number"
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
+              disabled={loading}
             />
             {/* Password Field */}
             <input
               type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               placeholder="Enter password"
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
+              disabled={loading}
             />
             {/* Forgot Password */}
             <div className="text-right mb-2">
@@ -88,8 +166,9 @@ const Login = () => {
               }}
               onMouseOver={e => (e.target.style.background = '#E53935')}
               onMouseOut={e => (e.target.style.background = '#FF3D00')}
+              disabled={loading}
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
             {/* OR Divider */}
             <div className="flex items-center gap-4 my-2">
