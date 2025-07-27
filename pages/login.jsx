@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+import firebaseApp from '../src/firebase';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ const Login = () => {
             {/* Email Field */}
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email/phone number"
               className="w-full px-5 py-3 rounded-xl border border-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-orange-200"
               style={{ fontFamily: 'Poppins, sans-serif', fontSize: 16 }}
             />
@@ -89,6 +91,13 @@ const Login = () => {
             >
               Login
             </button>
+            {/* OR Divider */}
+            <div className="flex items-center gap-4 my-2">
+              <div className="flex-1 h-px bg-[#E0E0E0]"></div>
+              <span className="text-xs" style={{ color: '#9E9E9E' }}>OR</span>
+              <div className="flex-1 h-px bg-[#E0E0E0]"></div>
+            </div>
+            {/* Google Login Button */}
           </form>
           {/* comment */}
           {/* Register Prompt */}
