@@ -25,15 +25,15 @@ const GiveLeftovers = () => {
     e.preventDefault();
     
     // Format the message for WhatsApp
-    const message = `🍽️ *LEFTOVER FOOD DONATION*\n\n` +
-      `*Item Name:* ${formData.itemName}\n` +
-      `*Quantity:* ${formData.quantity}\n` +
-      `*Description:* ${formData.description || 'N/A'}\n` +
-      `*Expiry Date:* ${formData.expiryDate}\n` +
-      `*Available Until:* ${formData.availableUntil}\n` +
-      `*Pickup Location:* ${formData.pickupLocation}\n` +
-      `*Contact Number:* ${formData.contactNumber}\n\n` +
-      `Thank you for your donation! 🙏`;
+    const message = `${t('leftoverDonationMessage')}\n\n` +
+      `*${t('itemName')}:* ${formData.itemName}\n` +
+      `*${t('quantity')}:* ${formData.quantity}\n` +
+      `*${t('description')}:* ${formData.description || 'N/A'}\n` +
+      `*${t('expiryDate')}:* ${formData.expiryDate}\n` +
+      `*${t('availableUntil')}:* ${formData.availableUntil}\n` +
+      `*${t('pickupLocation')}:* ${formData.pickupLocation}\n` +
+      `*${t('contactNumber')}:* ${formData.contactNumber}\n\n` +
+      `${t('thankYouDonation')}`;
     
     // Encode the message for URL
     const encodedMessage = encodeURIComponent(message);
@@ -61,10 +61,10 @@ const GiveLeftovers = () => {
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Give Leftovers
+            {t('giveLeftoversTitle')}
           </h1>
           <p className="text-gray-600">
-            Share your surplus food items with those who need them. Help reduce food waste and support your community.
+            {t('giveLeftoversDescription')}
           </p>
         </div>
 
@@ -73,7 +73,7 @@ const GiveLeftovers = () => {
             {/* Item Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Item Name *
+                {t('itemName')} *
               </label>
               <input
                 type="text"
@@ -82,14 +82,14 @@ const GiveLeftovers = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="e.g., Bread, Vegetables, Cooked Food"
+                placeholder={t('itemNamePlaceholder')}
               />
             </div>
 
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quantity *
+                {t('quantity')} *
               </label>
               <input
                 type="text"
@@ -98,14 +98,14 @@ const GiveLeftovers = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="e.g., 5 kg, 10 pieces, 2 containers"
+                placeholder={t('quantityPlaceholder')}
               />
             </div>
 
             {/* Expiry Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Expiry Date *
+                {t('expiryDate')} *
               </label>
               <input
                 type="date"
@@ -120,7 +120,7 @@ const GiveLeftovers = () => {
             {/* Available Until */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Available Until *
+                {t('availableUntil')} *
               </label>
               <input
                 type="datetime-local"
@@ -135,7 +135,7 @@ const GiveLeftovers = () => {
             {/* Pickup Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pickup Location *
+                {t('pickupLocation')} *
               </label>
               <input
                 type="text"
@@ -144,14 +144,14 @@ const GiveLeftovers = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="e.g., Shop Address, Landmark"
+                placeholder={t('pickupLocationPlaceholder')}
               />
             </div>
 
             {/* Contact Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Number *
+                {t('contactNumber')} *
               </label>
               <input
                 type="tel"
@@ -160,7 +160,7 @@ const GiveLeftovers = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="Your contact number"
+                placeholder={t('contactNumberPlaceholder')}
               />
             </div>
           </div>
@@ -168,7 +168,7 @@ const GiveLeftovers = () => {
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              {t('description')}
             </label>
             <textarea
               name="description"
@@ -176,7 +176,7 @@ const GiveLeftovers = () => {
               onChange={handleInputChange}
               rows="4"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Additional details about the food item, storage conditions, etc."
+              placeholder={t('descriptionPlaceholder')}
             />
           </div>
 
@@ -186,7 +186,7 @@ const GiveLeftovers = () => {
               type="submit"
               className="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors duration-200"
             >
-              Donate Leftovers
+              {t('donateLeftovers')}
             </button>
           </div>
         </form>
@@ -194,14 +194,14 @@ const GiveLeftovers = () => {
         {/* Information Section */}
         <div className="mt-8 p-6 bg-orange-50 rounded-lg">
           <h3 className="text-lg font-semibold text-orange-700 mb-3">
-            💡 Tips for Donating Leftovers
+            {t('tipsForDonating')}
           </h3>
           <ul className="space-y-2 text-sm text-orange-600">
-            <li>• Ensure food is still safe to consume</li>
-            <li>• Package items properly to maintain freshness</li>
-            <li>• Be specific about pickup times and location</li>
-            <li>• Include any special storage instructions</li>
-            <li>• Respond promptly to pickup requests</li>
+            <li>{t('ensureFoodSafe')}</li>
+            <li>{t('packageProperly')}</li>
+            <li>{t('specificPickup')}</li>
+            <li>{t('storageInstructions')}</li>
+            <li>{t('respondPromptly')}</li>
           </ul>
         </div>
       </div>

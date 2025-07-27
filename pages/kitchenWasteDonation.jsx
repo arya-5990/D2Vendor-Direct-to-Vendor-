@@ -64,10 +64,10 @@ const KitchenWasteDonation = () => {
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            🌱 Waste to Wealth: Kitchen Composting Initiative
+            {t('wasteToWealthTitle')}
           </h1>
           <p className="text-gray-600">
-            Transform your kitchen waste into nutrient-rich compost. Join our sustainable growth program and contribute to a greener future.
+            {t('wasteToWealthDescription')}
           </p>
         </div>
 
@@ -76,7 +76,7 @@ const KitchenWasteDonation = () => {
             {/* Waste Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type of Kitchen Waste *
+                {t('wasteType')} *
               </label>
               <select
                 name="wasteType"
@@ -85,12 +85,12 @@ const KitchenWasteDonation = () => {
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="">Select waste type</option>
-                <option value="Vegetable peels and scraps">Vegetable peels and scraps</option>
+                <option value="">{t('selectWasteType')}</option>
+                <option value="Vegetable peels and scraps">{t('vegetablePeels')}</option>
                 <option value="Fruit peels and cores">Fruit peels and cores</option>
-                <option value="Coffee grounds and tea leaves">Coffee grounds and tea leaves</option>
-                <option value="Eggshells">Eggshells</option>
-                <option value="Bread and grain waste">Bread and grain waste</option>
+                <option value="Coffee grounds and tea leaves">{t('coffeeGrounds')}</option>
+                <option value="Eggshells">{t('eggshells')}</option>
+                <option value="Bread and grain waste">{t('breadWaste')}</option>
                 <option value="Mixed kitchen waste">Mixed kitchen waste</option>
                 <option value="Other">Other</option>
               </select>
@@ -99,7 +99,7 @@ const KitchenWasteDonation = () => {
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Approximate Quantity *
+                Approximate {t('quantity')} *
               </label>
               <input
                 type="text"
@@ -108,14 +108,14 @@ const KitchenWasteDonation = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="e.g., 2 kg per day, 5 liters per week"
+                placeholder={t('frequencyPlaceholder')}
               />
             </div>
 
             {/* Frequency */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Collection Frequency *
+                {t('frequency')} *
               </label>
               <select
                 name="frequency"
@@ -124,36 +124,48 @@ const KitchenWasteDonation = () => {
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="">Select frequency</option>
-                <option value="Daily">Daily</option>
-                <option value="Every 2-3 days">Every 2-3 days</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Bi-weekly">Bi-weekly</option>
-                <option value="Monthly">Monthly</option>
-                <option value="On-demand">On-demand</option>
+                <option value="">{t('selectFrequency')}</option>
+                <option value="Daily">{t('daily')}</option>
+                <option value="Every 2-3 days">{t('every2to3Days')}</option>
+                <option value="Weekly">{t('weekly')}</option>
+                <option value="Bi-weekly">{t('biWeekly')}</option>
+                <option value="Monthly">{t('monthly')}</option>
+                <option value="On-demand">{t('onDemand')}</option>
               </select>
             </div>
 
             {/* Available Days */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Collection Days *
+                {t('availableDays')} *
               </label>
-              <input
-                type="text"
+              <select
                 name="availableDays"
                 value={formData.availableDays}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="e.g., Monday, Wednesday, Friday or Any day"
-              />
+              >
+                <option value="">{t('selectAvailableDays')}</option>
+                <option value="Monday">{t('monday')}</option>
+                <option value="Tuesday">{t('tuesday')}</option>
+                <option value="Wednesday">{t('wednesday')}</option>
+                <option value="Thursday">{t('thursday')}</option>
+                <option value="Friday">{t('friday')}</option>
+                <option value="Saturday">{t('saturday')}</option>
+                <option value="Sunday">{t('sunday')}</option>
+                <option value="Monday, Wednesday, Friday">{t('monday')}, {t('wednesday')}, {t('friday')}</option>
+                <option value="Tuesday, Thursday, Saturday">{t('tuesday')}, {t('thursday')}, {t('saturday')}</option>
+                <option value="Weekdays (Monday-Friday)">{t('weekdays')} ({t('monday')}-{t('friday')})</option>
+                <option value="Weekends (Saturday-Sunday)">{t('weekends')} ({t('saturday')}-{t('sunday')})</option>
+                <option value="Any day">{t('anyDay')}</option>
+              </select>
             </div>
 
             {/* Pickup Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pickup Location *
+                {t('pickupLocation')} *
               </label>
               <input
                 type="text"
@@ -162,14 +174,14 @@ const KitchenWasteDonation = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="e.g., Shop Address, Landmark, Area"
+                placeholder={t('pickupLocationPlaceholder')}
               />
             </div>
 
             {/* Contact Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Number *
+                {t('contactNumber')} *
               </label>
               <input
                 type="tel"
@@ -178,7 +190,7 @@ const KitchenWasteDonation = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Your contact number"
+                placeholder={t('contactNumberPlaceholder')}
               />
             </div>
           </div>
@@ -186,7 +198,7 @@ const KitchenWasteDonation = () => {
           {/* Composting Experience */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Previous Composting Experience
+              {t('compostingExperience')}
             </label>
             <select
               name="compostingExperience"
@@ -194,18 +206,18 @@ const KitchenWasteDonation = () => {
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
-              <option value="">Select experience level</option>
-              <option value="Beginner - No experience">Beginner - No experience</option>
-              <option value="Some experience with home composting">Some experience with home composting</option>
-              <option value="Experienced - Regular composting">Experienced - Regular composting</option>
-              <option value="Expert - Professional composting">Expert - Professional composting</option>
+              <option value="">{t('selectExperience')}</option>
+              <option value="Beginner - No experience">{t('beginner')}</option>
+              <option value="Some experience with home composting">{t('someExperience')}</option>
+              <option value="Experienced - Regular composting">{t('experienced')}</option>
+              <option value="Expert - Professional composting">{t('expert')}</option>
             </select>
           </div>
 
           {/* Special Instructions */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Special Instructions or Notes
+              {t('specialInstructions')}
             </label>
             <textarea
               name="specialInstructions"
@@ -213,7 +225,7 @@ const KitchenWasteDonation = () => {
               onChange={handleInputChange}
               rows="4"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="Any special requirements, storage conditions, or additional information..."
+              placeholder={t('specialInstructionsPlaceholder')}
             />
           </div>
 
@@ -223,7 +235,7 @@ const KitchenWasteDonation = () => {
               type="submit"
               className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors duration-200"
             >
-              🌱 Donate Kitchen Waste
+              {t('donateKitchenWaste')}
             </button>
           </div>
         </form>
@@ -231,15 +243,15 @@ const KitchenWasteDonation = () => {
         {/* Information Section */}
         <div className="mt-8 p-6 bg-green-50 rounded-lg">
           <h3 className="text-lg font-semibold text-green-700 mb-3">
-            🌿 Benefits of Kitchen Waste Composting
+            {t('benefitsOfComposting')}
           </h3>
           <ul className="space-y-2 text-sm text-green-600">
-            <li>• Reduces landfill waste and methane emissions</li>
-            <li>• Creates nutrient-rich organic fertilizer</li>
-            <li>• Improves soil health and water retention</li>
-            <li>• Supports sustainable agriculture practices</li>
-            <li>• Contributes to circular economy principles</li>
-            <li>• Helps combat climate change</li>
+            <li>{t('reducesLandfill')}</li>
+            <li>{t('createsFertilizer')}</li>
+            <li>{t('improvesSoil')}</li>
+            <li>{t('supportsAgriculture')}</li>
+            <li>{t('circularEconomy')}</li>
+            <li>{t('combatsClimate')}</li>
           </ul>
         </div>
 
